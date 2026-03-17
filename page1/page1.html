@@ -661,12 +661,19 @@
 
     const btn = document.getElementById('btn');
 
+    function handleClick(e) {
+      e.stopPropagation();  // ✅ Event ko parent tak jaane se roko
+      e.preventDefault();   // ✅ Default behavior roko
+      goToNextPage();
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
       if (btn) {
-        btn.addEventListener('click', function (e) {
-          e.stopPropagation();  // ✅ Sirf button click hoga
-          goToNextPage();
-        });
+        // Mouse click ke liye
+        btn.addEventListener('click', handleClick);
+
+        // Mobile touch ke liye
+        btn.addEventListener('touchstart', handleClick, { passive: false });
       }
     });
   </script>
