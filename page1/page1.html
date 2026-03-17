@@ -29,7 +29,6 @@
 
     /* canvas stars */
     #space {
-      /* position: absolute; */
       top: 0;
       left: 0;
       width: 100%;
@@ -275,12 +274,6 @@
       color: gold;
     }
 
-    #btn.show {
-      opacity: 1;
-      visibility: visible;
-      animation: buttonGlow 1s infinite;
-    }
-
     #btn i {
       font-size: 28px;
       color: gold;
@@ -353,7 +346,7 @@
     </svg>
   </div>
 
-  <div class="button-container" onclick="goToNextPage()">
+  <div class="button-container">
     <button id="btn">
       <i class="fa-solid fa-arrow-right"></i>
     </button>
@@ -662,26 +655,22 @@
   </script>
 
   <script>
-    let buttonTimer;  // ✅ Variable define karo
-
     function goToNextPage() {
       window.parent.postMessage({ type: 'NEXT_PAGE' }, '*');
     }
 
     const btn = document.getElementById('btn');
 
-    if (buttonTimer) clearTimeout(buttonTimer);
-    buttonTimer = setTimeout(() => {
-      btn.classList.add('show');
-    }, );
-
-
     document.addEventListener('DOMContentLoaded', function () {
       if (btn) {
-        btn.addEventListener('click', goToNextPage);
+        btn.addEventListener('click', function (e) {
+          e.stopPropagation();  // ✅ Sirf button click hoga
+          goToNextPage();
+        });
       }
     });
   </script>
+
 </body>
 
 </html>
