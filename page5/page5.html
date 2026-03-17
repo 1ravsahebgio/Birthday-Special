@@ -69,12 +69,14 @@
             width: 100%;
             height: 87%;
             object-fit: cover;
-            touch-action: none;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
+            -webkit-touch-callout: none !important;
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+            user-select: none !important;
+            pointer-events: auto;
+            touch-action: none !important;
+
         }
 
         /* Simple message - bilkul light */
@@ -124,7 +126,6 @@
 
         // ===== VIDEO END PE REDIRECT =====
         video.addEventListener('ended', function () {
-            // Fastest redirect to page6.html
             window.parent.postMessage({ type: 'NEXT_PAGE' }, '*');
         });
 
@@ -134,7 +135,10 @@
             }
         }
 
-        videoBox.addEventListener('click', function () {
+        // ✅ FIXED: Sirf click count ke liye event, video play ke liye alag
+        function handleVideoBoxClick(e) {
+            e.stopPropagation();
+
             if (!isActive) return;
 
             // First click - message hide
@@ -150,11 +154,8 @@
             if (clickCount === 3) {
                 vibratePhone([50, 30, 50]);
 
-                if (video.paused) {
-                    video.play();
-                } else {
-                    video.pause();
-                }
+                // ✅ Video play karo
+                video.play().catch(err => console.log('Play failed:', err));
 
                 isActive = false;
                 clickCount = 0;
@@ -165,31 +166,30 @@
             clickTimer = setTimeout(function () {
                 clickCount = 0;
             }, 1000);
-        });
+        }
+
+        videoBox.addEventListener('click', handleVideoBoxClick);
+        videoBox.addEventListener('touchstart', handleVideoBoxClick, { passive: false });
 
         document.body.addEventListener('touchstart', function () { }, { once: true });
-    </script>
 
-    <script>
-        // Video long-press band karne ka code
-        document.querySelectorAll('video').forEach(video => {
-            video.addEventListener('contextmenu', (e) => {
-                e.preventDefault();
-                return false;
-            });
-
-            video.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-            }, { passive: false });
-
-            video.addEventListener('touchmove', (e) => {
-                e.preventDefault();
-            }, { passive: false });
-
-            video.addEventListener('touchend', (e) => {
-                e.preventDefault();
-            }, { passive: false });
+        // ✅ Video long-press band karo, lekin click count hone do
+        video.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            return false;
         });
+
+        video.addEventListener('touchstart', (e) => {
+            e.stopPropagation();  // Allow click count, but no menu
+        }, { passive: false });
+
+        video.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+        }, { passive: false });
+
+        video.addEventListener('touchend', (e) => {
+            e.stopPropagation();  // Allow click count
+        }, { passive: false });
     </script>
 
 </body>
