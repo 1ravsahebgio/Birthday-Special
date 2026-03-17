@@ -33,6 +33,7 @@
         transform: scale(1);
         transform-origin: center;
         pointer-events: none;
+        touch-action: none;
     }
 
     .cake-container {
@@ -179,7 +180,7 @@
     }
 
     #btn {
-        padding: 8px 40px;
+        padding: 6px 35px;
         border-radius: 60px;
         border: 2px solid gold;
         background: rgba(0, 0, 0, 0.074);
@@ -197,6 +198,7 @@
         opacity: 0;
         visibility: hidden;
         transition: opacity 0.5s ease, visibility 0.5s ease;
+        touch-action: manipulation;
     }
 
     #btn.show {
