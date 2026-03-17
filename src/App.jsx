@@ -25,7 +25,7 @@ useEffect(() => {
       prevPage();
     }
     if (event.data?.type === 'RESTART') {
-      setCurrentPage(1);  // ✅ Page 1 pe chale jao
+      setCurrentPage(1);
     }
   };
   window.addEventListener('message', handleMessage);
@@ -35,7 +35,7 @@ useEffect(() => {
   return (
     <div style={{ width: '100%', height: '100vh', overflow: 'hidden', background: '#000' }}>
       <iframe
-        src={`/page${currentPage}/page${currentPage}.html`}
+        src={`/Birthday-Special/page${currentPage}/page${currentPage}.html`}
         style={{
           width: '100%',
           height: '100%',
