@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Uday Cricket Video</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      height: 100vh;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .video-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #cricketVideo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: #000;
+    }
+
+    html,
+    body {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      touch-action: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="video-container">
+    <video id="cricketVideo" src="cricketVideo.mp4" autoplay playsinline webkit-playsinline preload="auto">
+    </video>
+  </div>
+
+  <script>
+    const video = document.getElementById('cricketVideo');
+
+    // Video play
+    video.play().catch(() => { });
+
+    // ✅ Video khatam hote hi IMMEDIATELY page4 par chale jao
+    video.addEventListener('ended', function () {
+      window.parent.postMessage({ type: 'NEXT_PAGE' }, '*');
+    });
+
+    // Agar video already end ho chuka ho to bhi kaam kare
+    if (video.readyState >= 4) {
+      window.parent.postMessage({ type: 'NEXT_PAGE' }, '*');
+    }
+
+    // Touch prevent
+    document.body.addEventListener('touchmove', function (e) {
+      e.preventDefault();
+    }, { passive: false });
+
+  </script>
+</body>
+
+</html>
