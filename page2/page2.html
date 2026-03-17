@@ -498,6 +498,29 @@
       e.preventDefault();
     }, { passive: false });
   </script>
+
+  <script>
+    // Sabhi images ke long-press ko band karo
+    document.querySelectorAll('img').forEach(img => {
+      img.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        return false;
+      });
+
+      img.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+      }, { passive: false });
+
+      img.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+      }, { passive: false });
+
+      img.addEventListener('touchend', (e) => {
+        e.preventDefault();
+      }, { passive: false });
+    });
+  </script>
+
 </body>
 
 </html>

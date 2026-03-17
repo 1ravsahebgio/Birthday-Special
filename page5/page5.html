@@ -170,6 +170,28 @@
         document.body.addEventListener('touchstart', function () { }, { once: true });
     </script>
 
+    <script>
+        // Video long-press band karne ka code
+        document.querySelectorAll('video').forEach(video => {
+            video.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                return false;
+            });
+
+            video.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+            }, { passive: false });
+
+            video.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+            }, { passive: false });
+
+            video.addEventListener('touchend', (e) => {
+                e.preventDefault();
+            }, { passive: false });
+        });
+    </script>
+
 </body>
 
 </html>
