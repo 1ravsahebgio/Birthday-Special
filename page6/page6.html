@@ -183,7 +183,7 @@
         padding: 6px 35px;
         border-radius: 60px;
         border: 2px solid gold;
-        background: rgba(0, 0, 0, 0.074);
+        background: rgba(0, 0, 0, 0.081);
         backdrop-filter: blur(10px);
         cursor: pointer;
         display: flex;
@@ -193,11 +193,11 @@
         transition: all 0.3s ease;
         border: 2px solid #ffd700;
         box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
-        pointer-events: auto;
         color: gold;
         opacity: 0;
         visibility: hidden;
         transition: opacity 0.5s ease, visibility 0.5s ease;
+        pointer-events: auto;
         touch-action: manipulation;
     }
 
@@ -504,10 +504,17 @@
                 btn.classList.add('show');
             }, 30000);
 
-            btn.addEventListener('click', () => {
-                window.parent.postMessage({ type: 'RESTART' }, '*');  // ✅ RESTART message bhejo
-            })
+            function handleButtonClick(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                window.parent.postMessage({ type: 'RESTART' }, '*');
+            }
+
+            btn.addEventListener('click', handleButtonClick);
+            btn.addEventListener('touchstart', handleButtonClick, { passive: false });
+
         }
+
 
         // Event listeners
         knife.addEventListener('touchstart', startDrag, { passive: false });
