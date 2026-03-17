@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Cake Cutting</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+<link rel="stylesheet" href="/style.css">
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background-color: black;
+        height: 100%;
+        width: 100%;
+        touch-action: none;
+    }
+
+    .background-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .background-img img {
+        width: 100%;
+        height: 100%;
+        transform: scale(1);
+        transform-origin: center;
+        pointer-events: none;
+    }
+
+    .cake-container {
+        position: absolute;
+        top: 45%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 200px;
+        height: 200px;
+        z-index: 10;
+    }
+
+    .cake {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        transition: opacity 0.5s ease, filter 0.5s ease;
+        pointer-events: none;
+        touch-action: none;
+    }
+
+    .cake img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        pointer-events: none;
+        touch-action: none;
+    }
+
+    #fullCake {
+        opacity: 0.8;
+        z-index: 5;
+        filter: blur(0px);
+    }
+
+    #sliceWithCake {
+        opacity: 0;
+        z-index: 6;
+        filter: blur(0px);
+    }
+
+    #sliceCake {
+        opacity: 0;
+        z-index: 7;
+        filter: blur(0px);
+        position: absolute;
+    }
+
+    .knife-container {
+        position: absolute;
+        bottom: 20px;
+        left: 30%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 120px;
+        height: 100px;
+        z-index: 20;
+        transform: rotate(-10deg);
+        cursor: grab;
+        touch-action: none;
+        will-change: left, top;
+        transition: none;
+    }
+
+    .knife-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        pointer-events: none;
+    }
+
+    .knife-container.dragging {
+        cursor: grabbing;
+        filter: drop-shadow(0 0 20px gold);
+    }
+
+    .knife-container.hide {
+        display: none;
+    }
+
+    #cake-size {
+        position: absolute;
+        left: 42.5%;
+        top: 30%;
+        width: 15%;
+        height: 25%;
+        border-radius: 100px 100px 0 0;
+        border-bottom-left-radius: 40%;
+        border-bottom-right-radius: 40%;
+        opacity: 0;
+    }
+
+    #knife-cutter {
+        position: absolute;
+        left: 6.2%;
+        top: 50%;
+        width: 33%;
+        height: 6%;
+        border-bottom-left-radius: 100px;
+        transform-origin: center;
+        transform: rotate(-4deg);
+        opacity: 0;
+    }
+
+    .gas-effect {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at center, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+        pointer-events: none;
+        z-index: 9999;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+        mix-blend-mode: overlay;
+    }
+
+    .gas-effect.active {
+        opacity: 0.8;
+    }
+
+    #confetti-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 9998;
+        display: none;
+    }
+
+    #btn {
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+
+
+    audio {
+        display: none;
+    }
+</style>
+</head>
+
+<body>
+    <div class="background-img">
+        <img src="birhdayBackgroundImage.png" alt="Background">
+    </div>
+
+    <div class="cake-container">
+        <div class="cake" id="fullCake">
+            <img src="fullCake.png" alt="Full Cake">
+        </div>
+        <div id="cake-size"></div>
+        <div class="cake" id="sliceWithCake">
+            <img src="sliceWithCake.png" alt="Cake with Slice">
+        </div>
+        <div class="cake" id="sliceCake">
+            <img src="sliceCake.png" alt="Slice Only">
+        </div>
+    </div>
+
+    <div class="knife-container" id="knife">
+        <img src="k.png" alt="Knife">
+        <div id="knife-cutter"></div>
+    </div>
+
+    <div class="gas-effect" id="gasEffect"></div>
+
+    <canvas id="confetti-canvas"></canvas>
+
+    <audio id="birthdaySong" preload="auto">
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="button-container">
+        <button id="btn">
+            <i class="fa-solid fa-arrow-right"></i>
+        </button>
+    </div>
+
+    <script>
+        const fullCake = document.getElementById('fullCake');
+        const sliceWithCake = document.getElementById('sliceWithCake');
+        const sliceCake = document.getElementById('sliceCake');
+        const knife = document.getElementById('knife');
+        const cakeHit = document.getElementById('cake-size');
+        const knifeCutter = document.getElementById('knife-cutter');
+        const gasEffect = document.getElementById('gasEffect');
+        const song = document.getElementById('birthdaySong');
+        const btn = document.getElementById('btn');
+        const confettiCanvas = document.getElementById('confetti-canvas');
+        const ctx = confettiCanvas.getContext('2d');
+
+        let confettiParticles = [];
+        let confettiActive = false;
+        let confettiAnimationFrame;
+        let knifeTouchCount = 0;
+        let isDragging = false;
+        let isCut = false;
+        let startX, startY;
+        let buttonTimer = null;
+        let touchTimeout;
+        let rafId = null;
+
+        // Optimized drag with requestAnimationFrame
+        function startDrag(e) {
+            e.preventDefault();
+            if (isCut) return;
+            isDragging = true;
+            knife.classList.add('dragging');
+            const touch = e.touches ? e.touches[0] : e;
+            startX = touch.clientX - knife.offsetLeft;
+            startY = touch.clientY - knife.offsetTop;
+            if (navigator.vibrate) navigator.vibrate(20);
+        }
+
+        function onDrag(e) {
+            e.preventDefault();
+            if (!isDragging || isCut) return;
+
+            if (rafId) cancelAnimationFrame(rafId);
+
+            rafId = requestAnimationFrame(() => {
+                const touch = e.touches ? e.touches[0] : e;
+                let newX = touch.clientX - startX;
+                let newY = touch.clientY - startY;
+
+                newX = Math.max(0, Math.min(window.innerWidth - knife.offsetWidth, newX));
+                newY = Math.max(0, Math.min(window.innerHeight - knife.offsetHeight, newY));
+
+                knife.style.left = newX + 'px';
+                knife.style.top = newY + 'px';
+
+                checkKnifeTouch();
+                rafId = null;
+            });
+        }
+
+        function stopDrag(e) {
+            e.preventDefault();
+            if (!isDragging || isCut) return;
+            isDragging = false;
+            knife.classList.remove('dragging');
+            if (rafId) {
+                cancelAnimationFrame(rafId);
+                rafId = null;
+            }
+        }
+
+        function checkKnifeTouch() {
+            if (isCut) return;
+
+            const cakeRect = cakeHit.getBoundingClientRect();
+            const cutterRect = knifeCutter.getBoundingClientRect();
+
+            if (cutterRect.right > cakeRect.left &&
+                cutterRect.left < cakeRect.right &&
+                cutterRect.bottom > cakeRect.top &&
+                cutterRect.top < cakeRect.bottom) {
+
+                knifeTouchCount++;
+                if (navigator.vibrate) navigator.vibrate(30);
+
+                clearTimeout(touchTimeout);
+                touchTimeout = setTimeout(() => {
+                    knifeTouchCount = 0;
+                }, 1000);
+
+                if (knifeTouchCount === 30) {
+                    cutTheCake();
+                }
+            }
+        }
+
+        // Confetti functions
+        function initConfetti() {
+            confettiParticles = [];
+            for (let i = 0; i < 200; i++) {
+                const width = Math.random() * 10 + 6;
+                const height = Math.random() * 6 + 3;
+
+                confettiParticles.push({
+                    x: Math.random() * window.innerWidth,
+                    y: Math.random() * window.innerHeight - window.innerHeight,
+                    width: width,
+                    height: height,
+                    speedY: Math.random() * 4 + 2,
+                    speedX: Math.random() * 2 - 1,
+                    color: `hsl(${Math.random() * 360}, 90%, 60%)`,
+                    rotation: Math.random() * 360,
+                    rotationSpeed: (Math.random() - 0.5) * 2,
+                    opacity: 0.9
+                });
+            }
+        }
+
+        function drawConfetti() {
+            if (!confettiActive) return;
+
+            ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+            let allDone = true;
+            for (let i = 0; i < confettiParticles.length; i++) {
+                let p = confettiParticles[i];
+
+                p.y += p.speedY;
+                p.x += p.speedX;
+                p.rotation += p.rotationSpeed;
+
+                if (p.y > window.innerHeight - 200) {
+                    p.opacity = Math.max(0, p.opacity - 0.005);
+                }
+
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate((p.rotation * Math.PI) / 180);
+                ctx.globalAlpha = p.opacity;
+                ctx.fillStyle = p.color;
+                ctx.fillRect(-p.width / 2, -p.height / 2, p.width, p.height);
+                ctx.restore();
+
+                if (p.y < window.innerHeight + 100 && p.opacity > 0) {
+                    allDone = false;
+                }
+            }
+
+            if (allDone && confettiActive) {
+                stopConfetti();
+            } else {
+                confettiAnimationFrame = requestAnimationFrame(drawConfetti);
+            }
+        }
+
+        function startConfetti() {
+            confettiCanvas.style.display = 'block';
+            confettiActive = true;
+            initConfetti();
+            drawConfetti();
+
+            setTimeout(() => {
+                stopConfetti();
+            }, 5000);
+        }
+
+        function stopConfetti() {
+            confettiActive = false;
+            if (confettiAnimationFrame) {
+                cancelAnimationFrame(confettiAnimationFrame);
+            }
+            ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+            confettiCanvas.style.display = 'none';
+        }
+
+        window.addEventListener('resize', () => {
+            confettiCanvas.width = window.innerWidth;
+            confettiCanvas.height = window.innerHeight;
+        });
+
+        confettiCanvas.width = window.innerWidth;
+        confettiCanvas.height = window.innerHeight;
+
+        function cutTheCake() {
+            if (isCut) return;
+            isCut = true;
+
+            knife.classList.add('hide');
+            song.play().catch(e => console.log('Song failed:', e));
+            gasEffect.classList.add('active');
+            fullCake.style.filter = 'blur(8px) brightness(1.2)';
+
+            startConfetti();
+
+            setTimeout(() => {
+                fullCake.style.opacity = '0';
+                sliceWithCake.style.opacity = '1';
+                fullCake.style.filter = 'blur(0px) brightness(1)';
+                sliceWithCake.style.filter = 'blur(0px) brightness(1)';
+
+                setTimeout(() => {
+                    sliceWithCake.style.filter = 'blur(8px) brightness(1.2)';
+
+                    setTimeout(() => {
+                        sliceWithCake.style.opacity = '0';
+                        sliceCake.style.opacity = '1';
+                        sliceCake.style.filter = 'blur(8px) brightness(1.2)';
+
+                        setTimeout(() => {
+                            sliceCake.style.filter = 'blur(0px) brightness(1)';
+                            gasEffect.classList.remove('active');
+
+                            if (navigator.vibrate) {
+                                navigator.vibrate([100, 50, 100, 50, 200]);
+                            }
+                        }, 500);
+                    }, 500);
+                }, 2000);
+            }, 1000);
+
+            if (buttonTimer) clearTimeout(buttonTimer);
+            buttonTimer = setTimeout(() => {
+                btn.classList.add('show');
+            }, 30000);
+
+            btn.addEventListener('click', () => {
+                window.parent.postMessage({ type: 'RESTART' }, '*');  // ✅ RESTART message bhejo
+            })
+        }
+
+        // Event listeners
+        knife.addEventListener('touchstart', startDrag, { passive: false });
+        knife.addEventListener('mousedown', startDrag);
+
+        window.addEventListener('touchmove', onDrag, { passive: false });
+        window.addEventListener('mousemove', onDrag);
+
+        window.addEventListener('touchend', stopDrag);
+        window.addEventListener('mouseup', stopDrag);
+
+        document.body.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+        document.body.addEventListener('dragstart', (e) => e.preventDefault());
+    </script>
+</body>
+
+</html>

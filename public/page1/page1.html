@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Home Page</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    body {
+      height: 100vh;
+      overflow: hidden;
+      background: #020105;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      touch-action: pan-y pinch-zoom;
+      scrollbar-width: none;
+    }
+
+    /* canvas stars */
+    #space {
+      /* position: absolute; */
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* planets */
+    .planet {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(1px) saturate(1.8);
+      animation: float 7s ease-in-out infinite;
+      box-shadow: 0 0 40px currentColor;
+      mix-blend-mode: screen;
+      z-index: 1;
+      opacity: 0.8;
+    }
+
+    .p1 {
+      width: 90px;
+      height: 90px;
+      left: 10px;
+      top: 20px;
+      background: radial-gradient(circle at 35% 30%, #ffb0ff, #6f3aff, #1a0044);
+      color: #f5f;
+    }
+
+    .p2 {
+      width: 100px;
+      height: 100px;
+      right: 5px;
+      top: 10px;
+      background: radial-gradient(circle at 30% 40%, #aadcff, #2f4bff, #08003f);
+      color: #6bf;
+      animation-delay: 1.2s;
+    }
+
+    .p3 {
+      width: 80px;
+      height: 80px;
+      right: 10px;
+      bottom: .7%;
+      background: radial-gradient(circle at 60% 30%, #ffb3ff, #b15eff, #24005e);
+      color: #f9f;
+      animation-delay: 2.5s;
+    }
+
+    .p4 {
+      width: 45px;
+      height: 45px;
+      left: 13px;
+      bottom: .3%;
+      background: radial-gradient(circle at 20% 30%, #ffe285, #b76eff);
+      filter: blur(1.8px);
+      opacity: 0.5;
+      animation: float 9s ease-in-out infinite reverse;
+    }
+
+    .orb2 {
+      top: 20px;
+      right: 15px;
+      animation-delay: -2s;
+    }
+
+    .orb3 {
+      bottom: 6%;
+      left: 10px;
+      animation-delay: -4s;
+    }
+
+    /* ---------- CENTERED STAR ---------- */
+    .star-container {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(0.95);
+      width: 340px;
+      height: 340px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 20;
+      transition: transform 0.2s ease;
+      padding: 20px;
+    }
+
+    .star-container::before {
+      content: "";
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      background: radial-gradient(circle, rgba(255, 200, 255, 0.6) 0%, #a47cff 40%, transparent 80%);
+      filter: blur(45px);
+      opacity: 0.6;
+      animation: pulseGlow 4s infinite alternate;
+      border-radius: 50%;
+      z-index: 1;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .star-svg {
+      width: 260px;
+      height: 260px;
+      position: relative;
+      z-index: 15;
+      filter: drop-shadow(0 0 30px #c49eff) drop-shadow(0 0 70px #6d3cff);
+      transform: rotate(0deg);
+      animation: subtleSpin 30s linear infinite;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .star-beam {
+      stroke-dasharray: 360 50;
+      stroke-dashoffset: 0;
+      animation: flow 9s linear infinite;
+    }
+
+    /* orbiters */
+    .orbiter {
+      position: absolute;
+      width: 56px;
+      height: 56px;
+      background: rgba(20, 5, 30, 0.25);
+      border-radius: 50%;
+      border: 1.5px solid rgba(255, 220, 255, 0.6);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 28px;
+      z-index: 30;
+      box-shadow: 0 0 40px #d08eff, inset 0 0 15px #ffffff60;
+      animation: miniFloat 5s infinite alternate;
+      cursor: grab;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-drag: element;
+      transition: box-shadow 0.2s, transform 0.1s;
+    }
+
+    .orbiter:active {
+      cursor: grabbing;
+      transform: scale(1.08);
+      box-shadow: 0 0 70px #ffd966, 0 0 120px #ffa0ff;
+    }
+
+    /* sparkle canvas */
+    #sparkle-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 45;
+    }
+
+    /* animations */
+    @keyframes float {
+      0% {
+        transform: translateY(0px) translateX(0px);
+      }
+
+      50% {
+        transform: translateY(-12px) translateX(6px);
+      }
+
+      100% {
+        transform: translateY(0px) translateX(0px);
+      }
+    }
+
+    @keyframes pulseGlow {
+      0% {
+        opacity: 0.4;
+        transform: translate(-50%, -50%) scale(0.9);
+      }
+
+      100% {
+        opacity: 0.8;
+        transform: translate(-50%, -50%) scale(1.2);
+      }
+    }
+
+    @keyframes subtleSpin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes flow {
+      to {
+        stroke-dashoffset: -820;
+      }
+    }
+
+    @keyframes miniFloat {
+      0% {
+        transform: translateY(0px) scale(1);
+      }
+
+      100% {
+        transform: translateY(-12px) scale(1.02);
+      }
+    }
+
+    .button-container {
+      bottom: 4%;
+    }
+
+    #btn {
+      padding: 5px 30px;
+      color: gold;
+    }
+
+    circle {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="space"></canvas>
+  <canvas id="sparkle-canvas"></canvas>
+
+  <div class="planet p1"></div>
+  <div class="planet p2"></div>
+  <div class="planet p3"></div>
+  <div class="planet p4"></div>
+
+  <!-- ORBITERS -->
+  <div class="orbiter orb2" id="drag-2" data-emoji="✨">✨</div>
+  <div class="orbiter orb3" id="drag-3" data-emoji="🔮">🔮</div>
+
+  <!-- STAR (perfectly centered) -->
+  <div class="star-container" id="starWrap">
+    <svg class="star-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#fffcd0" />
+          <stop offset="50%" stop-color="#dbb0ff" />
+          <stop offset="100%" stop-color="#9ac9ff" />
+        </linearGradient>
+        <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="4" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+      <path d="M100 10 L115 70 L175 70 L130 110 L155 180 L100 140 L45 180 L70 110 L25 70 L85 70 L100 10 Z"
+        fill="url(#grad)" fill-opacity="0.08" stroke="url(#grad)" stroke-width="3.2" class="star-beam"
+        style="filter:url(#softGlow); stroke-linejoin:round;" />
+    </svg>
+  </div>
+
+  <div class="button-container" onclick="goToNextPage()">
+    <button id="btn">
+      <i class="fa-solid fa-arrow-right"></i>
+    </button>
+  </div>
+
+  <script>
+    (function () {
+      // ---------- GLOBAL DRAG SPARKLES (anywhere) ----------
+      const sparkleCanvas = document.getElementById('sparkle-canvas');
+      const sCtx = sparkleCanvas.getContext('2d');
+      let w, h;
+      let sparkles = [];
+
+      function resizeSparkle() {
+        w = window.innerWidth;
+        h = window.innerHeight;
+        sparkleCanvas.width = w;
+        sparkleCanvas.height = h;
+      }
+      window.addEventListener('resize', resizeSparkle);
+      resizeSparkle();
+
+      class Spark {
+        constructor(x, y, hueShift) {
+          this.x = x;
+          this.y = y;
+          this.vx = (Math.random() - 0.5) * 3.2;
+          this.vy = (Math.random() - 0.5) * 3.2 - 1.2;
+          this.size = Math.random() * 8 + 3;
+          this.life = 1.0;
+          this.decay = 0.012 + Math.random() * 0.02;
+          this.hue = (hueShift + Date.now() * 0.02) % 360;
+        }
+        update() {
+          this.x += this.vx;
+          this.y += this.vy;
+          this.vy += 0.08;
+          this.vx *= 0.99;
+          this.vy *= 0.99;
+          this.life -= this.decay;
+          return this.life <= 0;
+        }
+      }
+
+      let globalDragging = false;
+      let lastX = 0, lastY = 0;
+      let globalHue = 200;
+
+      function addSparkles(px, py, count, hueBase) {
+        for (let i = 0; i < count; i++) {
+          sparkles.push(new Spark(px + (Math.random() - 0.5) * 20, py + (Math.random() - 0.5) * 20, hueBase + i * 30));
+        }
+      }
+
+      function drawSparkles() {
+        if (!sCtx) return;
+        sCtx.clearRect(0, 0, w, h);
+        sparkles = sparkles.filter(s => !s.update());
+
+        sparkles.forEach(s => {
+          const opacity = s.life * 0.9;
+          const size = s.size * s.life;
+          sCtx.beginPath();
+          sCtx.arc(s.x, s.y, size * 0.8, 0, 2 * Math.PI);
+          sCtx.fillStyle = `hsla(${s.hue}, 95%, 70%, ${opacity})`;
+          sCtx.fill();
+
+          sCtx.beginPath();
+          sCtx.arc(s.x - 1, s.y - 1, size * 0.3, 0, 2 * Math.PI);
+          sCtx.fillStyle = `hsla(${s.hue}, 95%, 90%, ${opacity + 0.2})`;
+          sCtx.fill();
+        });
+
+        requestAnimationFrame(drawSparkles);
+      }
+      drawSparkles();
+
+      // ----- GLOBAL LISTENERS (touch / mouse) -----
+      function startGlobalDrag(x, y) {
+        globalDragging = true;
+        lastX = x;
+        lastY = y;
+        addSparkles(lastX, lastY, 10, globalHue);
+        globalHue = (globalHue + 30) % 360;
+      }
+
+      function moveGlobalDrag(x, y) {
+        if (!globalDragging) return;
+        const dist = Math.hypot(x - lastX, y - lastY);
+        if (dist > 8) {
+          const steps = Math.min(6, Math.floor(dist / 5));
+          for (let i = 0; i < steps; i++) {
+            const fx = lastX + (x - lastX) * (i / steps);
+            const fy = lastY + (y - lastY) * (i / steps);
+            addSparkles(fx, fy, 2, globalHue + i * 10);
+          }
+          lastX = x;
+          lastY = y;
+        } else {
+          addSparkles(x, y, 1, globalHue);
+        }
+        globalHue = (globalHue + 1) % 360;
+      }
+
+      function stopGlobalDrag() {
+        if (globalDragging) {
+          globalDragging = false;
+          if (lastX && lastY) {
+            addSparkles(lastX, lastY, 20, globalHue);
+          }
+        }
+      }
+
+      // touch
+      document.addEventListener('touchstart', (e) => {
+        const target = e.target;
+        if (target.classList && target.classList.contains('orbiter')) return;
+        e.preventDefault();
+        const touch = e.touches[0];
+        startGlobalDrag(touch.clientX, touch.clientY);
+      }, { passive: false });
+
+      document.addEventListener('touchmove', (e) => {
+        const target = e.target;
+        if (target.classList && target.classList.contains('orbiter')) return;
+        e.preventDefault();
+        if (!globalDragging) return;
+        const touch = e.touches[0];
+        moveGlobalDrag(touch.clientX, touch.clientY);
+      }, { passive: false });
+
+      document.addEventListener('touchend', (e) => {
+        const target = e.target;
+        if (target.classList && target.classList.contains('orbiter')) return;
+        e.preventDefault();
+        stopGlobalDrag();
+      });
+      document.addEventListener('touchcancel', (e) => {
+        const target = e.target;
+        if (target.classList && target.classList.contains('orbiter')) return;
+        e.preventDefault();
+        globalDragging = false;
+      });
+
+      // mouse
+      document.addEventListener('mousedown', (e) => {
+        const target = e.target;
+        if (target.classList && target.classList.contains('orbiter')) return;
+        e.preventDefault();
+        startGlobalDrag(e.clientX, e.clientY);
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        const target = e.target;
+        if (target.classList && target.classList.contains('orbiter')) return;
+        if (!globalDragging) return;
+        e.preventDefault();
+        moveGlobalDrag(e.clientX, e.clientY);
+      });
+
+      document.addEventListener('mouseup', (e) => {
+        const target = e.target;
+        if (target.classList && target.classList.contains('orbiter')) return;
+        if (globalDragging) {
+          e.preventDefault();
+          stopGlobalDrag();
+        }
+      });
+
+      // ---------- ORBITER-SPECIFIC (preserve colored sparkles) ----------
+      let orbiterDragActive = false;
+      let orbiterLastX = 0, orbiterLastY = 0;
+      let currentOrbiterHue = 280;
+
+      const orbiters = [
+        { el: document.getElementById('drag-2'), emoji: '🔮', hue: 210 },
+        { el: document.getElementById('drag-3'), emoji: '✨', hue: 45 }
+      ];
+
+      orbiters.forEach(item => {
+        const orb = item.el;
+        if (!orb) return;
+
+        orb.addEventListener('touchstart', (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          const touch = e.touches[0];
+          orbiterDragActive = true;
+          orbiterLastX = touch.clientX;
+          orbiterLastY = touch.clientY;
+          currentOrbiterHue = item.hue;
+          addSparkles(orbiterLastX, orbiterLastY, 8, currentOrbiterHue);
+        }, { passive: false });
+
+        orb.addEventListener('touchmove', (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          if (!orbiterDragActive) return;
+          const touch = e.touches[0];
+          const x = touch.clientX;
+          const y = touch.clientY;
+
+          const dist = Math.hypot(x - orbiterLastX, y - orbiterLastY);
+          if (dist > 8) {
+            const steps = Math.min(5, Math.floor(dist / 6));
+            for (let i = 0; i < steps; i++) {
+              const fx = orbiterLastX + (x - orbiterLastX) * (i / steps);
+              const fy = orbiterLastY + (y - orbiterLastY) * (i / steps);
+              addSparkles(fx, fy, 2, currentOrbiterHue + i * 10);
+            }
+            orbiterLastX = x;
+            orbiterLastY = y;
+          } else {
+            addSparkles(x, y, 1, currentOrbiterHue);
+          }
+        }, { passive: false });
+
+        orb.addEventListener('touchend', (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          orbiterDragActive = false;
+          if (orbiterLastX && orbiterLastY) {
+            addSparkles(orbiterLastX, orbiterLastY, 12, currentOrbiterHue);
+          }
+        });
+
+        orb.addEventListener('touchcancel', (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          orbiterDragActive = false;
+        });
+
+        orb.addEventListener('mousedown', (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          orbiterDragActive = true;
+          orbiterLastX = e.clientX;
+          orbiterLastY = e.clientY;
+          currentOrbiterHue = item.hue;
+          addSparkles(orbiterLastX, orbiterLastY, 8, currentOrbiterHue);
+        });
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!orbiterDragActive) return;
+        e.preventDefault();
+        e.stopPropagation();
+        const x = e.clientX;
+        const y = e.clientY;
+        const dist = Math.hypot(x - orbiterLastX, y - orbiterLastY);
+        if (dist > 6) {
+          const steps = Math.min(4, Math.floor(dist / 5));
+          for (let i = 0; i < steps; i++) {
+            const fx = orbiterLastX + (x - orbiterLastX) * (i / steps);
+            const fy = orbiterLastY + (y - orbiterLastY) * (i / steps);
+            addSparkles(fx, fy, 2, currentOrbiterHue + i * 15);
+          }
+          orbiterLastX = x;
+          orbiterLastY = y;
+        } else {
+          addSparkles(x, y, 1, currentOrbiterHue);
+        }
+      });
+
+      window.addEventListener('mouseup', (e) => {
+        if (orbiterDragActive) {
+          e.preventDefault();
+          e.stopPropagation();
+          orbiterDragActive = false;
+          if (orbiterLastX && orbiterLastY) addSparkles(orbiterLastX, orbiterLastY, 12, currentOrbiterHue);
+        }
+      });
+
+      // ---------- background starfield ----------
+      const canvas = document.getElementById('space');
+      const ctx = canvas.getContext('2d');
+      let stars = [];
+      function initStars() {
+        for (let i = 0; i < 60; i++) stars.push({
+          x: Math.random(), y: Math.random(), size: Math.random() * 2.2 + 0.6,
+          speedX: (Math.random() - 0.5) * 0.0014, speedY: (Math.random() - 0.5) * 0.0014,
+          bright: Math.random() * 0.6 + 0.2, hue: Math.random() * 50 + 210
+        });
+      }
+      function resizeBg() {
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+      }
+      function drawBg() {
+        if (!ctx) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        stars.forEach(s => {
+          s.x += s.speedX; s.y += s.speedY;
+          if (s.x < 0) s.x = 1; if (s.x > 1) s.x = 0;
+          if (s.y < 0) s.y = 1; if (s.y > 1) s.y = 0;
+          const x = s.x * canvas.width, y = s.y * canvas.height;
+          ctx.beginPath(); ctx.arc(x, y, s.size * 1.5, 0, 2 * Math.PI);
+          ctx.fillStyle = `hsla(${s.hue}, 80%, 70%, 0.15)`; ctx.fill();
+          ctx.beginPath(); ctx.arc(x, y, s.size * 0.8, 0, 2 * Math.PI);
+          ctx.fillStyle = `hsla(${s.hue}, 90%, 85%, ${s.bright})`; ctx.fill();
+        });
+        requestAnimationFrame(drawBg);
+      }
+      window.addEventListener('resize', resizeBg);
+      resizeBg(); initStars(); drawBg();
+    })();
+  </script>
+
+  <script>
+    function goToNextPage() {
+      window.parent.postMessage({ type: 'NEXT_PAGE' }, '*');
+    }
+
+    const btn = document.getElementById('btn');
+
+    if (buttonTimer) clearTimeout(buttonTimer);
+    buttonTimer = setTimeout(() => {
+      btn.classList.add('show');
+    }, 30000);
+
+    // Next button pe click handler
+    document.addEventListener('DOMContentLoaded', function () {
+      if (btn) {
+        btn.addEventListener('click', goToNextPage);
+      }
+    });
+
+
+  </script>
+</body>
+
+</html>

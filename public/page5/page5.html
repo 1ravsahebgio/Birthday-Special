@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Box Open</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: radial-gradient(circle at center, #2b1f4a 0%, #1a1735 40%, #0c0b1f 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* top blur */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 25%;
+            background: rgba(0, 0, 0, 0.6);
+            filter: blur(60px);
+        }
+
+        /* bottom blur */
+        body::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 25%;
+            background: rgba(0, 0, 0, 0.6);
+            filter: blur(60px);
+        }
+
+        .video-box {
+            width: 100%;
+            max-width: 400px;
+            aspect-ratio: 9/16;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+        }
+
+        video {
+            width: 100%;
+            height: 87%;
+            object-fit: cover;
+        }
+
+        /* Simple message - bilkul light */
+        .message {
+            position: fixed;
+            top: 16px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            color: rgb(254, 255, 182);
+            font-size: 16.5px;
+            font-family: Arial, sans-serif;
+            letter-spacing: 1px;
+            z-index: 9999;
+            pointer-events: none;
+            text-shadow: 0 0 5px rgb(0, 0, 0);
+        }
+
+        .message.hide {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Simple message - chhota aur clean -->
+    <div class="message" id="message">
+        Click Three Times On Box
+    </div>
+
+    <div class="video-box" id="videoBox">
+        <video id="myVideo">
+            <source src="boxOpening.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <script>
+        const video = document.getElementById('myVideo');
+        const videoBox = document.getElementById('videoBox');
+        const message = document.getElementById('message');
+
+        let clickCount = 0;
+        let clickTimer;
+        let isActive = true;
+        let isFirstClick = true;
+
+        // ===== VIDEO END PE REDIRECT =====
+        video.addEventListener('ended', function () {
+            // Fastest redirect to page6.html
+            window.parent.postMessage({ type: 'NEXT_PAGE' }, '*');
+        });
+
+        function vibratePhone(pattern) {
+            if (navigator.vibrate && window.location.protocol === 'https:') {
+                navigator.vibrate(pattern);
+            }
+        }
+
+        videoBox.addEventListener('click', function () {
+            if (!isActive) return;
+
+            // First click - message hide
+            if (isFirstClick) {
+                message.classList.add('hide');
+                isFirstClick = false;
+            }
+
+            vibratePhone(30);
+            clickCount++;
+            clearTimeout(clickTimer);
+
+            if (clickCount === 3) {
+                vibratePhone([50, 30, 50]);
+
+                if (video.paused) {
+                    video.play();
+                } else {
+                    video.pause();
+                }
+
+                isActive = false;
+                clickCount = 0;
+                videoBox.style.cursor = 'default';
+                return;
+            }
+
+            clickTimer = setTimeout(function () {
+                clickCount = 0;
+            }, 1000);
+        });
+
+        document.body.addEventListener('touchstart', function () { }, { once: true });
+    </script>
+
+</body>
+
+</html>

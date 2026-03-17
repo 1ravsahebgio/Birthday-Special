@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <title>Happy Birthday Uday - Page 4</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: black;
+      touch-action: none;
+      height: 100%;
+      width: 100%;
+      position: fixed;
+    }
+
+    .page {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+
+    .page img {
+      width: 100%;
+      height: 100%;
+      animation: partyVibe 0.35s infinite alternate ease-in-out;
+      transform-origin: center;
+    }
+
+    /* Party vibe - kam vibration, thoda zoom */
+    @keyframes partyVibe {
+      0% {
+        transform: scale(1) rotate(0deg);
+      }
+      30% {
+        transform: scale(1.02) rotate(0.15deg);
+      }
+      70% {
+        transform: scale(0.98) rotate(-0.15deg);
+      }
+      100% {
+        transform: scale(1.01) rotate(0.1deg);
+      }
+    }
+
+    /* main image (1.png) */
+    .top-image {
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      object-fit: contain;
+      pointer-events: none;
+      position: absolute;
+      top: 90px;
+      z-index: 5;
+      opacity: 0.2;
+      transition: opacity 0.3s ease;
+    }
+
+    /* effects container */
+    .effects-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+      overflow: hidden;
+    }
+
+    .sparkle,
+    .bubble,
+    .diamond {
+      position: absolute;
+      pointer-events: none;
+      opacity: 0.8;
+    }
+
+    .sparkle {
+      width: 6px;
+      height: 6px;
+      background: transparent;
+      box-shadow: 0 0 10px currentColor;
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+      animation: sparkleTwinkle 2s infinite alternate ease-in-out;
+    }
+
+    .bubble {
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 0 0 15px currentColor;
+      animation: bubbleFloat 4s infinite ease-in-out;
+    }
+
+    .diamond {
+      width: 4px;
+      height: 4px;
+      background: transparent;
+      border: 1px solid white;
+      transform: rotate(45deg);
+      box-shadow: 0 0 12px currentColor;
+      animation: diamondGlow 3s infinite alternate;
+    }
+
+    .pink { color: #ff69b4; background: #ff69b4; }
+    .red { color: #ff3333; background: #ff3333; }
+    .blue { color: #33aaff; background: #33aaff; }
+    .orange { color: #ffaa33; background: #ffaa33; }
+
+    .bubble-pink { background: rgba(255, 105, 180, 0.2); border-color: #ff69b4; }
+    .bubble-red { background: rgba(255, 51, 51, 0.2); border-color: #ff3333; }
+    .bubble-blue { background: rgba(51, 170, 255, 0.2); border-color: #33aaff; }
+    .bubble-orange { background: rgba(255, 170, 51, 0.2); border-color: #ffaa33; }
+
+    @keyframes sparkleTwinkle {
+      0% { opacity: 0.2; transform: scale(0.5); }
+      100% { opacity: 1; transform: scale(1.2); }
+    }
+
+    @keyframes bubbleFloat {
+      0% { transform: translateY(0) scale(1); opacity: 0.4; }
+      50% { transform: translateY(-20px) scale(1.2); opacity: 0.9; }
+      100% { transform: translateY(0) scale(1); opacity: 0.4; }
+    }
+
+    @keyframes diamondGlow {
+      0% { opacity: 0.3; transform: rotate(45deg) scale(0.8); }
+      100% { opacity: 1; transform: rotate(45deg) scale(1.3); }
+    }
+
+    .bubble-small { width: 4px; height: 4px; }
+    .bubble-medium { width: 8px; height: 8px; }
+    .bubble-large { width: 13px; height: 13px; }
+
+    .button-container {
+      position: absolute;
+      bottom: 3%; 
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      pointer-events: none;
+    }
+
+    #btn {
+      padding: 8px 40px;
+      border-radius: 60px;
+      border: 2px solid gold;
+      background: rgba(0, 0, 0, 0);
+      backdrop-filter: blur(10px);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-tap-highlight-color: transparent;
+      transition: all 0.3s ease;
+      border: 2px solid #ffd700;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+      pointer-events: auto;
+      color: gold;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    #btn.show {
+      opacity: 1;
+      visibility: visible;
+      animation: buttonGlow 1s infinite;
+    }
+
+    #btn i {
+      font-size: 28px;
+      color: gold;
+      transition: transform 0.3s ease;
+    }
+
+    #btn:hover i {
+      transform: translateX(5px);
+    }
+
+    #btn:active {
+      transform: scale(0.92);
+      background: rgba(255, 215, 0, 0.3);
+      box-shadow: 0 0 50px gold;
+    }
+
+    @keyframes buttonGlow {
+      0% { box-shadow: 0px 0px 6px gold, 0px 0px 12px orange; }
+      50% { box-shadow: 0px 0px 8px gold, 0px 0px 18px orange; }
+      100% { box-shadow: 0px 0px 6px gold, 0px 0px 12px orange; }
+    }
+
+    #birthdaySong {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <img src="starPage.png" alt="background" id="bgImage">
+  </div>
+
+  <img src="1.png" alt="Happy Birthday Uday" class="top-image" id="topImage">
+
+  <div class="effects-container" id="effectsContainer"></div>
+
+  <audio id="birthdaySong" loop>
+    <source src="music.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="button-container">
+    <button id="btn">
+      <i class="fa-solid fa-arrow-right"></i>
+    </button>
+  </div>
+
+  <script>
+    (function () {
+      const container = document.getElementById('effectsContainer');
+      if (!container) return;
+
+      container.innerHTML = '';
+
+      const sparkleColors = ['pink', 'red', 'blue', 'orange'];
+      for (let i = 0; i < 50; i++) {
+        const spark = document.createElement('div');
+        spark.className = `sparkle ${sparkleColors[i % 4]}`;
+        spark.style.left = Math.random() * 100 + '%';
+        spark.style.top = Math.random() * 100 + '%';
+        spark.style.animationDelay = Math.random() * 3 + 's';
+        const size = 4 + Math.floor(Math.random() * 6);
+        spark.style.width = size + 'px';
+        spark.style.height = size + 'px';
+        container.appendChild(spark);
+      }
+
+      const bubbleColors = ['bubble-pink', 'bubble-red', 'bubble-blue', 'bubble-orange'];
+      const bubbleSizes = ['bubble-small', 'bubble-medium', 'bubble-large'];
+      for (let i = 0; i < 12; i++) {
+        const bubble = document.createElement('div');
+        const colorClass = bubbleColors[Math.floor(Math.random() * bubbleColors.length)];
+        const sizeClass = bubbleSizes[Math.floor(Math.random() * bubbleSizes.length)];
+        bubble.className = `bubble ${colorClass} ${sizeClass}`;
+        bubble.style.left = Math.random() * 100 + '%';
+        bubble.style.top = Math.random() * 100 + '%';
+        bubble.style.animationDelay = Math.random() * 4 + 's';
+        container.appendChild(bubble);
+      }
+
+      for (let i = 0; i < 10; i++) {
+        const diamond = document.createElement('div');
+        diamond.className = `diamond ${sparkleColors[i % 4]}`;
+        diamond.style.left = Math.random() * 100 + '%';
+        diamond.style.top = Math.random() * 100 + '%';
+        diamond.style.animationDelay = Math.random() * 2 + 's';
+        const sz = 4 + Math.floor(Math.random() * 5);
+        diamond.style.width = sz + 'px';
+        diamond.style.height = sz + 'px';
+        container.appendChild(diamond);
+      }
+
+      for (let i = 0; i < 8; i++) {
+        const bigSpark = document.createElement('div');
+        bigSpark.className = `sparkle ${sparkleColors[i % 4]}`;
+        bigSpark.style.left = Math.random() * 100 + '%';
+        bigSpark.style.top = Math.random() * 100 + '%';
+        bigSpark.style.animationDelay = Math.random() * 2 + 's';
+        bigSpark.style.width = (13 + Math.floor(Math.random() * 5)) + 'px';
+        bigSpark.style.height = bigSpark.style.width;
+        container.appendChild(bigSpark);
+      }
+
+      // ===== BACKGROUND IMAGE - PARTY VIBE (3 seconds) =====
+      const bgImage = document.getElementById('bgImage');
+      
+      setTimeout(() => {
+        bgImage.style.animation = 'none';
+        bgImage.style.transform = 'scale(1) rotate(0deg)';
+      }, 3000);
+
+      // ===== TOP IMAGE OPACITY =====
+      const topImage = document.getElementById('topImage');
+      
+      setTimeout(() => { topImage.style.opacity = '0.4'; }, 1000);
+      setTimeout(() => { topImage.style.opacity = '0.6'; }, 2000);
+      setTimeout(() => { topImage.style.opacity = '0.8'; }, 3000);
+      setTimeout(() => { topImage.style.opacity = '1.0'; }, 4000);
+
+      // ===== SONG AUTO-PLAY =====
+      const song = document.getElementById('birthdaySong');
+      song.play().catch(() => {});
+      document.body.addEventListener('touchstart', function playOnce() {
+        song.play();
+        document.body.removeEventListener('touchstart', playOnce);
+      }, { once: true });
+
+      // ===== BUTTON AFTER 20 SECONDS =====
+      const btn = document.getElementById('btn');
+      setTimeout(() => {
+        btn.classList.add('show');
+      }, 15000);
+
+      btn.addEventListener('click', function () { 
+        setTimeout(() => {
+          window.parent.postMessage({ type: 'NEXT_PAGE' }, '*');
+        }, 500);
+      });
+
+    })();
+  </script>
+</body>
+
+</html>

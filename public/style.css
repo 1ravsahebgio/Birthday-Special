@@ -1,0 +1,64 @@
+    .button-container {
+        position: absolute;
+        bottom: 3%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        pointer-events: none;
+    }
+
+    #btn {
+        padding: 8px 40px;
+        border-radius: 60px;
+        border: 2px solid gold;
+        background: rgba(0, 0, 0, 0.074);
+        backdrop-filter: blur(10px);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-tap-highlight-color: transparent;
+        transition: all 0.3s ease;
+        border: 2px solid #ffd700;
+        box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+        pointer-events: auto;
+        color: gold;
+    }
+
+    #btn.show {
+        opacity: 1;
+        visibility: visible;
+        animation: buttonGlow 1s infinite;
+    }
+
+    #btn i {
+        font-size: 28px;
+        color: gold;
+        transition: transform 0.3s ease;
+    }
+
+    #btn:hover i {
+        transform: translateX(5px);
+    }
+
+    #btn:active {
+        transform: scale(0.92);
+        background: rgba(255, 215, 0, 0.3);
+        box-shadow: 0 0 50px gold;
+    }
+
+    @keyframes buttonGlow {
+        0% {
+            box-shadow: 0px 0px 6px gold, 0px 0px 12px orange;
+        }
+
+        50% {
+            box-shadow: 0px 0px 8px gold, 0px 0px 18px orange;
+        }
+
+        100% {
+            box-shadow: 0px 0px 6px gold, 0px 0px 12px orange;
+        }
+    }

@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <link rel="stylesheet" href="/style.css">
+  <title>Welcome Uday</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    body {
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: radial-gradient(circle at center, #142850 0%, #0a0f2c 60%, #050816 100%);
+      color: white;
+      position: relative;
+      background-image: url('RAWMN-ALL.png');
+      background-size: 110% 88%;
+      background-position: center;
+    }
+
+    /* ===== SPARKLES ===== */
+    .sparkles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    /* Base sparkle */
+    .sparkle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: gold;
+      border-radius: 50%;
+      box-shadow: 0 0 8px 2px #ffaa00;
+      animation: sparkleTwinkle 2.5s infinite ease-in-out;
+      opacity: 0;
+    }
+
+    /* STAR shape */
+    .sparkle.star {
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+      width: 10px;
+      height: 10px;
+      background: #fff8dc;
+      box-shadow: 0 0 12px 3px #ffd700;
+    }
+
+    /* Glowing star */
+    .sparkle.star-glow {
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+      width: 13px;
+      height: 13px;
+      background: #ffffaa;
+      box-shadow: 0 0 15px 4px #ffaa00, 0 0 25px 6px #ff7700;
+      animation: starPulse 2s infinite;
+    }
+
+    /* Diamond shape */
+    .sparkle.diamond {
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      width: 9px;
+      height: 9px;
+      background: #ffcc00;
+      transform: rotate(45deg);
+    }
+
+    /* Small sparkle */
+    .sparkle.small {
+      width: 8px;
+      height: 8px;
+      box-shadow: 0 0 7px 1px #ffaa00;
+    }
+
+    /* ===== SHOOTING STARS ===== */
+    .shooting-star {
+      position: absolute;
+      width: 70px;
+      height: 70px;
+      pointer-events: none;
+      z-index: 15;
+      opacity: 0;
+      filter: drop-shadow(0 0 30px gold) drop-shadow(0 0 60px #ffaa00);
+    }
+
+    /* Left shooting star - top left se */
+    .shooting-star.left {
+      left: -80px;
+      top: -80px;
+      animation: shootLeft 2.5s ease-out forwards;
+    }
+
+    /* Right shooting star - top right se */
+    .shooting-star.right {
+      right: -80px;
+      top: -80px;
+      animation: shootRight 2.5s ease-out forwards;
+    }
+
+    @keyframes shootLeft {
+      0% {
+        opacity: 0;
+        transform: translate(0, 0) rotate(45deg) scale(0.5);
+      }
+
+      10% {
+        opacity: 1;
+        transform: translate(30px, 30px) rotate(45deg) scale(1.3);
+      }
+
+      90% {
+        opacity: 1;
+        transform: translate(85vw, 85vh) rotate(45deg) scale(0.9);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate(100vw, 100vh) rotate(45deg) scale(0.5);
+      }
+    }
+
+    @keyframes shootRight {
+      0% {
+        opacity: 0;
+        transform: translate(0, 0) rotate(-45deg) scale(0.5);
+      }
+
+      10% {
+        opacity: 1;
+        transform: translate(-30px, 30px) rotate(-45deg) scale(1.3);
+      }
+
+      90% {
+        opacity: 1;
+        transform: translate(-85vw, 85vh) rotate(-45deg) scale(0.9);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate(-100vw, 100vh) rotate(-45deg) scale(0.5);
+      }
+    }
+
+    /* Animations */
+    @keyframes sparkleTwinkle {
+      0% {
+        opacity: 0;
+        transform: scale(0.5) rotate(0deg);
+      }
+
+      50% {
+        opacity: 0.9;
+        transform: scale(1) rotate(180deg);
+      }
+
+      100% {
+        opacity: 0;
+        transform: scale(0.5) rotate(360deg);
+      }
+    }
+
+    @keyframes starPulse {
+      0% {
+        opacity: 0.3;
+        transform: scale(0.8);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1.1);
+      }
+
+      100% {
+        opacity: 0.3;
+        transform: scale(0.8);
+      }
+    }
+
+    /* ===== IMAGE BALLOONS ===== */
+    .balloon-img {
+      position: absolute;
+      bottom: -150px;
+      width: 70px;
+      height: auto;
+      animation: floatUp 22s linear infinite;
+      z-index: 10;
+      filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.2));
+      will-change: transform;
+    }
+
+    .balloon-img.left {
+      width: 100px;
+    }
+
+    .balloon-img.right {
+      width: 100px;
+    }
+
+    .balloon-img.left-medium {
+      width: 85px;
+    }
+
+    .balloon-img.right-medium {
+      width: 85px;
+    }
+
+    .balloon-img.center {
+      width: 65px;
+    }
+
+    @keyframes floatUp {
+      from {
+        transform: translateY(0);
+      }
+
+      to {
+        transform: translateY(-120vh);
+      }
+    }
+
+    .balloon-img.slow {
+      animation-duration: 25s;
+    }
+
+    .balloon-img.fast {
+      animation-duration: 20s;
+    }
+
+    .button-container {
+      bottom: 4%;
+    }
+
+    /* ===== CONTINUE BUTTON ===== */
+    button {
+      display: none !important;
+      transition: 0.3s;
+      padding: 5px 30px;
+    }
+
+    button:active {
+      transform: scale(0.95);
+      background: rgba(255, 215, 0, 0.2);
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+    }
+
+
+    button.showBtn {
+      display: block !important; 
+    }
+
+    /* Mobile specific */
+    @media (max-width: 480px) {
+      .balloon-img {
+        width: 60px;
+      }
+
+      .balloon-img.left,
+      .balloon-img.right {
+        width: 80px;
+      }
+
+      .shooting-star {
+        width: 50px;
+        height: 50px;
+      }
+    }
+
+    /* Prevent scrolling */
+    html,
+    body {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    .fa-solid {
+      transition: 0.3s;
+    }
+  </style>
+</head>
+
+<body>
+  <audio src="welcomeSong.mp3" autoplay loop></audio>
+  <!-- Mobile Sparkles -->
+  <div class="sparkles"></div>
+
+  <!-- Shooting Stars Container -->
+  <div id="shooting-stars-container"></div>
+
+  <div class="button-container">
+    <button id="btn">
+      <i class="fa-solid fa-arrow-right"></i>
+    </button>
+  </div>
+
+  <!-- Image Balloons -->
+  <img src="bluBallon1.png" class="balloon-img left slow" style="left:2%; animation-delay:0s;" alt="balloon">
+  <img src="goldenBallon.png" class="balloon-img right fast" style="left:92%; animation-delay:3s;" alt="balloon">
+  <img src="whiteBallon.png" class="balloon-img left slow" style="left:8%; animation-delay:6s;" alt="balloon">
+  <img src="redBallon.png" class="balloon-img left-medium fast" style="left:18%; animation-delay:1.5s;" alt="balloon">
+  <img src="blueBallon.png" class="balloon-img right-medium slow" style="left:82%; animation-delay:2.5s;" alt="balloon">
+  <img src="pinkBallon.png" class="balloon-img left-medium fast" style="left:25%; animation-delay:5s;" alt="balloon">
+  <img src="OrangeBallon.png" class="balloon-img center slow" style="left:40%; animation-delay:4s;" alt="balloon">
+  <img src="bluBallon1.png" class="balloon-img center fast" style="left:55%; animation-delay:7s;" alt="balloon">
+  <img src="redBallon.png" class="balloon-img center slow" style="left:48%; animation-delay:8s;" alt="balloon">
+  <img src="goldenBallon.png" class="balloon-img center fast" style="left:62%; animation-delay:2s;" alt="balloon">
+
+  <script>
+    const button = document.getElementById("btn");
+    const container = document.getElementById("shooting-stars-container");
+
+    // Create sparkles
+    function createMobileSparkles() {
+      const sparklesContainer = document.querySelector(".sparkles");
+      sparklesContainer.innerHTML = '';
+
+      const totalSparkles = 21;
+
+      for (let i = 0; i < totalSparkles; i++) {
+        const isStar = Math.random() < 0.24;
+        const isGlowStar = Math.random() < 0.09;
+        const isDiamond = !isStar && !isGlowStar && Math.random() < 0.18;
+
+        let sparkle = document.createElement("div");
+
+        if (isGlowStar) {
+          sparkle.className = "sparkle star-glow";
+        } else if (isStar) {
+          sparkle.className = "sparkle star";
+        } else if (isDiamond) {
+          sparkle.className = "sparkle diamond";
+        } else {
+          sparkle.className = "sparkle";
+          if (Math.random() < 0.3) sparkle.classList.add("small");
+        }
+
+        const left = 2 + (Math.random() * 96);
+        const top = 2 + (Math.random() * 96);
+        const delay = Math.random() * 5;
+        const duration = 2 + Math.random() * 3;
+
+        sparkle.style.left = left + "%";
+        sparkle.style.top = top + "%";
+        sparkle.style.animationDelay = delay + "s";
+        sparkle.style.animationDuration = duration + "s";
+
+        sparklesContainer.appendChild(sparkle);
+      }
+    }
+
+    // Function to create shooting star
+    function createShootingStar(side) {
+      const star = document.createElement("img");
+      star.className = `shooting-star ${side}`;
+      star.src = side === 'left' ? 'shooting-star-left.png' : 'shooting-star-right.png';
+      star.alt = "shooting star";
+
+      star.addEventListener('animationend', function () {
+        this.remove();
+      });
+
+      container.appendChild(star);
+    }
+
+    // Stars sequence
+    let starSequence = 0;
+
+    function startStarSequence() {
+      setTimeout(() => {
+        createShootingStar('left');
+        setTimeout(() => {
+          createShootingStar('right');
+          setTimeout(() => {
+            createShootingStar('left');
+            setInterval(() => {
+              createShootingStar('right');
+              setTimeout(() => {
+                createShootingStar('left');
+              }, 6000);
+            }, 12000);
+          }, 6000);
+        }, 6000);
+      }, 3000);
+    }
+
+    setTimeout(() => {
+      startStarSequence();
+    }, 3000);
+
+    createMobileSparkles();
+    setInterval(createMobileSparkles, 10000);
+
+    setTimeout(() => {
+      button.classList.add("showBtn");
+    }, 5000);
+    // BUTTON CLICK HANDLER - pehle se hi add karo
+
+    button.addEventListener("click", function () {
+      if (!button.classList.contains('showBtn')) return;  // Agar button hidden hai to ignore
+
+      if (navigator.vibrate) navigator.vibrate(50);
+
+      // Celebration effect
+      for (let i = 0; i < 8; i++) {
+        setTimeout(() => {
+          const burst = document.createElement("div");
+          burst.className = "sparkle star-glow";
+          burst.style.left = 30 + Math.random() * 40 + "%";
+          burst.style.top = 40 + Math.random() * 20 + "%";
+          burst.style.animation = "starPulse 0.8s ease-in-out forwards";
+          document.querySelector(".sparkles").appendChild(burst);
+          setTimeout(() => burst.remove(), 800);
+        }, i * 70);
+      }
+
+      // ✅ NEXT PAGE PAR JAO
+      setTimeout(() => {
+        window.parent.postMessage({ type: 'NEXT_PAGE' }, '*');
+      }, 500); // Celebration ke baad page change
+    });
+
+    // Touch event prevention
+    document.body.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+    }, { passive: false });
+  </script>
+</body>
+
+</html>
